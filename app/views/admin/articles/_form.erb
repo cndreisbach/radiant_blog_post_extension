@@ -1,0 +1,51 @@
+<div class="form-area">
+  <p>
+    <%= form.label :parent_id, 'Blog' %>
+    <%= form.select(:parent_id, @blogs.map { |s| [s.title, s.id] }) %>
+  </p>
+  
+  <p class="title">
+    <%= form.label :title %>
+    <%= form.text_field :title, :class => 'textbox' %>
+  </p>
+  
+  <% Article::PARTS.each do |name, part| %>
+    <p class="<%= name %>">
+      <%= form.label name, (part[:label] || name.to_s.humanize.capitalize) %>
+      <%= form.send((part[:type] == :text ? :text_area : :text_field),
+                      name, {
+                      :class => (part[:type] == :text ? 'textarea' : 'textbox'),
+                      :style => 'width: 100%;'
+                    }) %>
+    </p>
+  <% end %>
+
+  <p class="status">
+    <%= form.label :status %>
+    <%= form.select(:status, %w(Draft Published)) %>
+  </p>
+
+  <p class="buttons">
+    <%= form.submit "Save Article", :class => 'button', :name => 'save' %>
+    <%= form.submit "Save and Continue Editing", :class => 'button', :name => 'save_and_continue' %>
+  </p>
+
+  <p id="preview-button" class="buttons">
+    <%= hidden_field_tag 'article_preview[page_id]', @page.id if @page %>
+    <script type="text/javascript" charset="utf-8">
+      function preview_html(response){
+        var contentType = response.getHeader('Content-type');
+        if (contentType.match(/^\s*(text|application)\/(x-)?(java|ecma)script(;.*)?\s*$/i) == null){
+          preview_window = window.open('', 'page_preview', 'resizable=yes,status=yes,scrollbars=yes');
+          preview_doc = preview_window.document;
+          preview_doc.open();
+          preview_doc.write(response.responseText);
+          preview_doc.close();
+        }
+      }
+    </script>
+    <%= submit_to_remote 'preview_page', 'Preview Article', :url => article_preview_path, :method => :post, 
+  	                     :with => "Form.serialize(this.form).replace(/_method=put/, '')",
+  	                     :success => "preview_html(request);", :html => {:class => 'button'} %>
+  </p>
+</div>

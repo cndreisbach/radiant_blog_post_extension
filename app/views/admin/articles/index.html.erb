@@ -1,0 +1,33 @@
+<h1>Edit News</h1>
+
+<p><%= link_to "Create a new article", new_article_path %></p>
+
+<table class="index">
+  <% @blogs.each do |blog| %>
+    <% unless blog.children.empty? %>
+      <thead>
+        <tr>
+          <th colspan="5">
+            <h2><%= blog.title %></h2>
+          </th>
+        </tr>
+        <tr>
+          <th class="name">Article Name</th>
+          <th class="updated_at">Updated At</th>
+          <th class="published_at">Published At</th>
+          <th class="status">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% blog.children(:order => 'updated_at DESC').each do |article| %>
+          <tr>
+            <td><%= link_to article.title, edit_article_path(article) %></td>
+            <td><%= article.updated_at %></td>
+            <td><%= article.published_at %></td>
+            <td><%= article.status.name %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    <% end %>
+  <% end %>
+</table>

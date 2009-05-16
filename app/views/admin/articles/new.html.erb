@@ -1,0 +1,5 @@
+<h1>Add News Item</h1>
+
+<% form_for :article, @article, :url => articles_url, :html => { :multipart => true } do |form| %>
+  <%= render :partial => 'form', :locals => { :form => form }%>
+<% end %>
